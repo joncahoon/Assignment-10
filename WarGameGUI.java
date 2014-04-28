@@ -42,7 +42,7 @@ public class WarGameGUI
       
       //create default game status
       status = new JLabel("Start a new game");
-      status.setFont(new Font("ARIAL", Font.PLAIN, 60));
+      status.setFont(new Font("ARIAL", Font.PLAIN, 50));
       gbc.gridx = 0; //grid row
       gbc.gridy = 0; //grid column
       gbc.gridwidth = 5; //amount of columns the status occupies
@@ -52,6 +52,7 @@ public class WarGameGUI
       
       //add buttons
       newGame = new JButton("New Game");
+      newGame.addActionListener(new ButtonListener());
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.gridx = 0;
       gbc.gridy = 2;
@@ -61,18 +62,20 @@ public class WarGameGUI
       mainFrame.add(newGame, gbc);
       
       flipCard = new JButton("Flip Card");
+      flipCard.addActionListener(new ButtonListener());
       gbc.gridx = 1;
       gbc.gridy = 2;
       gbc.gridwidth = 2;
       mainFrame.add(flipCard, gbc);
       
       quit = new JButton("Quit");
+      quit.addActionListener(new ButtonListener());
       gbc.gridx = 3;
       gbc.gridy = 2;
       gbc.gridwidth = 1;
       mainFrame.add(quit, gbc);
       
-      //add labels for cards and boad information
+      //add labels for cards and board information
       p2 = new JLabel("Player 2");
       p2.setFont(new Font("ARIAL", Font.PLAIN, 30));
       gbc.gridx = 0;
@@ -116,11 +119,12 @@ public class WarGameGUI
       gbc.gridy = 4;
       mainFrame.add(p1Deck, gbc);
          
-      p1Winnings = new JLabel(new ImageIcon("cardpics/back.jpg"));
+      p1Winnings = new JLabel(new ImageIcon("cardpics/decksmall.jpg"));
       gbc.gridx = 1;
       gbc.gridy = 4;
       mainFrame.add(p1Winnings, gbc);
       
+      gbc.fill = GridBagConstraints.CENTER;
       gbc.gridx = 1;
       gbc.gridy = 5;
       mainFrame.add(new JLabel("Cards Won"), gbc);
@@ -128,6 +132,7 @@ public class WarGameGUI
       gbc.gridx = 2;
       gbc.gridy = 5;
       mainFrame.add(new JLabel("Cards in Hand"), gbc);
+      
       
       //show the GUI when called   
       mainFrame.setVisible(true);;
@@ -150,9 +155,22 @@ public class WarGameGUI
          {
             try
             {
-               game.roundWinner();
-               //p1Card.setIcon(new ImageIcon("cardpics/" + game.p1Card.shortString() + ".jpg"));
-               //p2Card.setIcon(new ImageIcon("cardpics/" + game.p2Card.shortString() + ".jpg"));
+               if(game.getP1Card().getRank() != game.getP2Card().getRank())
+               {
+                  game.roundWinner();
+                  p1Card.setIcon(new ImageIcon("cardpics/" + game.getP1Card().shortString() + ".jpg"));
+                  p2Card.setIcon(new ImageIcon("cardpics/" + game.getP2Card().shortString() + ".jpg"));
+               }
+               else
+               {
+                  game.war();
+                  p1Card.setIcon(new ImageIcon("cardpics/back.jpg"));
+                  p2Card.setIcon(new ImageIcon("cardpics/back.jpg"));
+                  Thread.sleep(4000);
+                  p1Card.setIcon(new ImageIcon("cardpics/" + game.getP1Card().shortString() + ".jpg"));
+                  p2Card.setIcon(new ImageIcon("cardpics/" + game.getP2Card().shortString() + ".jpg"));
+               }
+
             }
             catch(NullPointerException error)
             {
