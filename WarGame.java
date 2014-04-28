@@ -19,6 +19,7 @@ public class WarGame
    private Card p1Card; //the card p1ayer 1 plays
    private Card p2Card; //the card player 2 plays
    private Hand downCards; //holds cards currently in play
+   private boolean inWar; //stores whether or not the game is in war
    
    /**Default constructor deals equal amount of cards to both players
    */
@@ -30,7 +31,8 @@ public class WarGame
       p1Winnings = new Hand(); //create empty hand for player 1 winnings pile
       p2Hand = new Hand(); // create empty hand for player 2
       p2Winnings = new Hand(); //create empty hand for player 2 winnings
-      downCards = new Hand();
+      downCards = new Hand(); //create empty hand for cards in play
+      inWar = false;
 
       
       deck.shuffle(); //shuffle the deck
@@ -67,21 +69,25 @@ public class WarGame
       //award all cards in play to the player who wins the round 
       if(p1Card.getRank() > p2Card.getRank())
 		{
+         inWar = false;
          while(!downCards.isEmpty())
             p1Winnings.addCard(downCards.dealCard());
 		}
 		else if(p2Card.getRank() >	p1Card.getRank())
 		{
+         inWar = false;
 		   while(!downCards.isEmpty())
             p2Winnings.addCard(downCards.dealCard());
       }
+      else
+         inWar = true;
 
    }
    /**War method plays one card face down from each player and adds them
       to the cards in play
    */
    public void war()
-   {      
+   {  
       //if a player's hand is empty shuffle the winnings pile and 
       //replace the winnings pile with the players empty hand
       if(p1Hand.isEmpty() || p2Hand.isEmpty())
@@ -93,7 +99,8 @@ public class WarGame
       //both players play one card face down
       downCards.addCard(p1Hand.dealCard());
       downCards.addCard(p2Hand.dealCard());
-         
+      
+      inWar = false;
    }
    
    /**handSwitch method shuffles the player's winnings hand and makes it
@@ -200,7 +207,15 @@ public class WarGame
    {
       return p2Hand.cardsRemaining();
    }
-
+   
+   /**warStatus method returns whether or not the game is currently in war
+      @return True if the game is in war
+   */
+   
+   public boolean warStatus()
+   {
+      return inWar;
+   }
   
    public static void main(String[] args)
    {
