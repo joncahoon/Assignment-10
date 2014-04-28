@@ -18,12 +18,7 @@ public class WarGame
    private Hand p2Winnings; //winning pile of cards for player 2
    private Card p1Card; //the card p1ayer 1 plays
    private Card p2Card; //the card player 2 plays
-   private Card p1WarCard;
-   private Card p2WarCard;
-   private Card downCards[] = new Card[Deck.CARDS_IN_DECK]; //holds played in war
-   private int cardsDown; //counts amount of cards played in war
-
-
+   private Hand downCards; //holds cards currently in play
    
    /**Default constructor deals equal amount of cards to both players
    */
@@ -35,8 +30,8 @@ public class WarGame
       p1Winnings = new Hand(); //create empty hand for player 1 winnings pile
       p2Hand = new Hand(); // create empty hand for player 2
       p2Winnings = new Hand(); //create empty hand for player 2 winnings
-      downCards = new Card[Deck.CARDS_IN_DECK];
-      cardsDown = 0;
+      downCards = new Hand();
+
       
       deck.shuffle(); //shuffle the deck
       
@@ -46,11 +41,11 @@ public class WarGame
          p2Hand.addCard(deck.dealCard());
       }
    }
-   /**roundWinner method determines who wins each time the players play
-      a card
+   /**playRound method each player plays on round of cards.  The winner
+      gets all cards currently in play
    */
    
-   public void roundWinner()
+   public void playRound()
    {  
       //if a player's hand is empty shuffle the winnings pile and replace
       //the winnings pile with the players empty hand
@@ -65,23 +60,28 @@ public class WarGame
       p1Card = p1Hand.dealCard();
       p2Card = p2Hand.dealCard();
       
+      //add played cards to downCards
+      downCards.addCard(p1Card);
+      downCards.addCard(p2Card);
+      
+      //award all cards in play to the player who wins the round 
       if(p1Card.getRank() > p2Card.getRank())
 		{
-		   p1Winnings.addCard(p1Card);
-		   p1Winnings.addCard(p2Card);
+         while(!downCards.isEmpty())
+            p1Winnings.addCard(downCards.dealCard());
 		}
 		else if(p2Card.getRank() >	p1Card.getRank())
 		{
-		   p2Winnings.addCard(p1Card);
-		   p2Winnings.addCard(p2Card);
+		   while(!downCards.isEmpty())
+            p2Winnings.addCard(downCards.dealCard());
       }
 
    }
-   /**War method plays one card face down from each player then plays 
-      another card face up.  Repeats until one player wins the war.
+   /**War method plays one card face down from each player and adds them
+      to the cards in play
    */
    public void war()
-   {
+   {      
       //if a player's hand is empty shuffle the winnings pile and 
       //replace the winnings pile with the players empty hand
       if(p1Hand.isEmpty() || p2Hand.isEmpty())
@@ -91,50 +91,9 @@ public class WarGame
             return;
       }
       //both players play one card face down
-      downCards[cardsDown] = p1Hand.dealCard();
-      cardsDown ++;
-      downCards[cardsDown] = p2Hand.dealCard();
-      cardsDown ++;
+      downCards.addCard(p1Hand.dealCard());
+      downCards.addCard(p2Hand.dealCard());
          
-      //if a player's hand is empty shuffle the winnings pile and 
-      //replace the winnings pile with the players empty hand
-      if(p1Hand.isEmpty() || p2Hand.isEmpty())
-      {
-         handShuffle();
-         if(winner() != 0);
-            return;
-      }
-      //both players play one card face up
-      p1WarCard = p1Hand.dealCard();
-      p2WarCard = p2Hand.dealCard();
-
-         
-      //add face up cards to the list of cards in play in war   
-      downCards[cardsDown] = p1WarCard;
-      cardsDown++;
-      downCards[cardsDown] = p2WarCard;
-      cardsDown ++;
-            
-      //the player who played the higher ranked card gets all the cards
-      //played in war and the cards leading to war
-      if(p1WarCard.getRank() > p2WarCard.getRank())
-      {
-         for(int i=0; i < cardsDown; i++)
-            p1Winnings.addCard(downCards[i]);
-         p1Winnings.addCard(p1Card);
-         cardsDown --;
-         p1Winnings.addCard(p2Card);
-         cardsDown --;
-      }
-      else
-      {
-         for(int i=0; i < cardsDown; i++)
-            p2Winnings.addCard(downCards[i]);
-         p2Winnings.addCard(p2Card);
-         cardsDown --;
-         p2Winnings.addCard(p1Card);
-         cardsDown --;
-      }
    }
    
    /**handSwitch method shuffles the player's winnings hand and makes it
@@ -146,9 +105,7 @@ public class WarGame
       int cardsLeft; //how many cards are in the winnings pile
       if(p1Hand.isEmpty())
       {
-         if(p1Winnings.isEmpty()) //if player 1 has no cards left they lose
-            winner();
-         else
+         if(!p1Winnings.isEmpty()) //if player 1 has no cards left they lose
          {
             p1Winnings.shuffle(); //shuffle winnings pile
             cardsLeft = p1Winnings.cardsRemaining(); //winnings pile size before dealing
@@ -159,9 +116,7 @@ public class WarGame
       }  
       if(p2Hand.isEmpty())
       {
-         if(p2Winnings.isEmpty())//if player 2 has no cards left they lose
-            winner();
-         else
+         if(!p2Winnings.isEmpty()) 
          {
             p2Winnings.shuffle(); //shuffle cards in winnings pile
             cardsLeft = p2Winnings.cardsRemaining();//amount of cards left before dealing
@@ -208,32 +163,50 @@ public class WarGame
       return p2Card;
    }
    
-   /**getP1WarCard returns the Card object associated with the card that
-      player 1 played when a war is called
-      @return A card object
+   /**getP1Winnings method returns the amount of cards in player 1's
+      winnings pile
+      @return The amount of cards in p1Winnings
    */
    
-   public Card getP1WarCard()
+   public int getP1Winnings()
    {
-      return p1WarCard;
+      return p1Winnings.cardsRemaining();
    }
    
-   /**getP2WarCard returns the Card object associated with the card
-      that player 2 played when a war is called
-      @return A card object
+   /**getP1Hand method returns the amount of cards in player 1's hand
+      @return The amount of cards in p1Hand
    */
    
-   public Card getP2WarCard()
+   public int getP1Hand()
    {
-      return p2WarCard;
+      return p1Hand.cardsRemaining();
    }
    
+   /**getP2Winnings method returns the amount of cards in player 2's
+      winnings pile
+      @return The amount of cards in p2Winnings
+   */
+   
+   public int getP2Winnings()
+   {
+      return p2Winnings.cardsRemaining();
+   }
+   
+   /**getP2Hand method returns the amount of cards in player 2's hand
+      @return The amount of cards in p2Hand
+   */
+   
+   public int getP2Hand()
+   {
+      return p2Hand.cardsRemaining();
+   }
+
   
    public static void main(String[] args)
    {
       WarGame war = new WarGame();
       while(war.winner() == 0)
-         war.roundWinner();
+         war.playRound();
       System.out.println(war.winner());
    }
 }
