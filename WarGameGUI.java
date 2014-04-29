@@ -27,7 +27,7 @@ public class WarGameGUI
    public WarGameGUI()
    {
       mainFrame = new JFrame("Jon's Game of War");//create mainFrame
-      mainFrame.setSize(1000,800);//set default size of frame
+      mainFrame.setSize(800,1000);//set default size of frame
       
       //create GridBagLayout to organize the game interface
       GridBagLayout  layout = new GridBagLayout();
@@ -51,7 +51,7 @@ public class WarGameGUI
       gbc.gridx = 0; //grid row
       gbc.gridy = 0; //grid column
       gbc.gridwidth = 5; //amount of columns the status occupies
-      gbc.weighty = 20; //extra space created between buttons and status
+      gbc.weighty = 1.0; //extra space created between buttons and status
       mainFrame.add(status, gbc);
       
       //add buttons
@@ -62,7 +62,7 @@ public class WarGameGUI
       gbc.gridy = 1;
       gbc.gridwidth = 1; //reset width and height to only 1 row and column
       gbc.gridheight = 1;
-      gbc.weighty = 10;
+      gbc.weighty = 0;
       mainFrame.add(newGame, gbc);
       
       flipCard = new JButton("Play Card");
@@ -86,7 +86,6 @@ public class WarGameGUI
       gbc.gridx = 1;
       gbc.gridy = 2;
       gbc.weighty = 0;
-      gbc.fill = GridBagConstraints.CENTER;
       mainFrame.add(p2WinCount, gbc);
       
       p2HandCount = new JLabel("Cards in Hand: ");
@@ -132,7 +131,6 @@ public class WarGameGUI
       gbc.fill = GridBagConstraints.HORIZONTAL;
       gbc.gridx = 0;
       gbc.gridy = 4;
-      gbc.gridwidth = 1;
       mainFrame.add(p1, gbc);
          
       p1Deck = new JLabel(new ImageIcon("cardpics/empty.jpg"));
@@ -179,10 +177,7 @@ public class WarGameGUI
       else if(game.getP1Hand() > 0)
          p1Deck.setIcon(new ImageIcon("cardpics/back.jpg"));
       else
-      {
          p1Deck.setIcon(new ImageIcon("cardpics/empty.jpg"));
-         shuffle();
-      }
                      
       if(game.getP2Hand() > 15)
          p2Deck.setIcon(new ImageIcon("cardpics/decklarge.jpg"));
@@ -193,10 +188,7 @@ public class WarGameGUI
       else if(game.getP2Hand() > 0)
          p2Deck.setIcon(new ImageIcon("cardpics/back.jpg"));
       else
-      {
          p2Deck.setIcon(new ImageIcon("cardpics/empty.jpg"));
-         shuffle();
-      }
                      
       if(game.getP1Winnings() > 15)
          p1Winnings.setIcon(new ImageIcon("cardpics/decklarge.jpg"));
@@ -220,18 +212,8 @@ public class WarGameGUI
       else
          p2Winnings.setIcon(new ImageIcon("cardpics/empty.jpg"));
    }
-   
-   /**shuffle alerts the players their winnings deck is being shuffled
-      into their hand
-   */
-   public void shuffle()
-   {
-      status.setText("Shuffling Cards Won into Hand");
-   }
                    
          
-         
-   
    /**ButtonListener class handles button events
    */
    private class ButtonListener implements ActionListener
@@ -243,9 +225,16 @@ public class WarGameGUI
          {
             game = new WarGame();
             status.setText("New Game");
+            status.setIcon(null);
 
             p1Deck.setIcon(new ImageIcon("cardpics/decklarge.jpg"));
             p2Deck.setIcon(new ImageIcon("cardpics/decklarge.jpg"));
+            p1Winnings.setIcon(new ImageIcon("cardpics/empty.jpg"));
+            p2Winnings.setIcon(new ImageIcon("cardpics/empty.jpg"));
+            p1Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
+            p2Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
+            flipCard.setText("Play Card");
+            
             p1HandCount.setText("Cards in Hand: " + game.getP1Hand());
             p2HandCount.setText("Cards in Hand: " + game.getP2Hand());
             p1WinCount.setText("Cards Won: " + game.getP1Winnings());
@@ -322,6 +311,8 @@ public class WarGameGUI
       public void gameOver()
       {
          flipCard.setEnabled(false);
+         p1Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
+         p2Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
          if(game.winner() == 1)
             status.setText("Player 1 Wins!");
          else
