@@ -21,6 +21,7 @@ public class WarGameGUI
    private JLabel p1WinCount, p2WinCount, p1HandCount, p2HandCount;
    //button to let the user play or quit
    private JButton newGame, flipCard, quit;
+   private boolean roundEnd; //shows if a player has won the round
    
    /**WarGameGUI creates the GUI to play the game of war
    */
@@ -244,6 +245,7 @@ public class WarGameGUI
          
    /**ButtonListener class handles button events
    */
+   
    private class ButtonListener implements ActionListener
    {
       public void actionPerformed(ActionEvent e) 
@@ -253,6 +255,9 @@ public class WarGameGUI
          {
             game = new WarGame();
             status.setText("New Game");
+            roundEnd = false;
+            
+            //reset all images and text
             status.setIcon(null);
             flipCard.setEnabled(true);
 
@@ -296,30 +301,52 @@ public class WarGameGUI
                      showDecks();
                      cardsHand();
                   }
-                                      
-                  //each player plays a card and update the image for the card
-                  game.playRound();
-                  p1Card.setIcon(new ImageIcon("cardpics/" + game.getP1Card().shortString() + ".jpg"));
-                  p2Card.setIcon(new ImageIcon("cardpics/" + game.getP2Card().shortString() + ".jpg"));
-                  cardsHand();
-                  showDecks();
                   
+                  //if it is not the end of a round play next round
+                  if(!roundEnd)
+                  {
+                     //each player plays a card and update the image for the card
+                     game.playRound();
+                     p1Card.setIcon(new ImageIcon("cardpics/" + game.getP1Card().shortString() + ".jpg"));
+                     p2Card.setIcon(new ImageIcon("cardpics/" + game.getP2Card().shortString() + ".jpg"));
+                     cardsHand();
+                     showDecks();
                   
-                  //display who won the round        
-                  if(game.getP1Card().getRank() > game.getP2Card().getRank())
-                     status.setText("Player wins the round");
+                     //display who won the round        
+                     if(game.getP1Card().getRank() > game.getP2Card().getRank())
+                     {
+                        status.setText("Player wins the round");
+                        flipCard.setText("Take Cards");
+                        roundEnd = true;
+                     }
                   
-                  else if(game.getP1Card().getRank() < game.getP2Card().getRank())
-                     status.setText("Computer wins the round");
+                     else if(game.getP1Card().getRank() < game.getP2Card().getRank())
+                     {
+                        status.setText("Computer wins the round");
+                        flipCard.setText("Take Cards");
+                        roundEnd = true;
+                     }
                      
-                  //if cards are equal display the game goes to war
+                     //if cards are equal display the game goes to war
+                     else
+                     {
+                        status.setText(null);
+                        status.setIcon(new ImageIcon("cardpics/war.jpg"));
+                        //change button to play a card face down
+                        flipCard.setText("Play Card Face Down");
+                        roundEnd = false;
+                     }
+                  }
+                  
+                  //if it is the end of a round clear the cards in play
                   else
                   {
-                     status.setText(null);
-                     status.setIcon(new ImageIcon("cardpics/war.jpg"));
-                     //change button to play a card face down
-                     flipCard.setText("Play Card Face Down");
+                     roundEnd = false;
+                     p1Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
+                     p2Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
+                     flipCard.setText("Play Card");
                   }
+                  
                }
                   
                //if in war play a card face down
