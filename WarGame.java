@@ -51,12 +51,12 @@ public class WarGame
    {  
       //if a player's hand is empty shuffle the winnings pile and replace
       //the winnings pile with the players empty hand
-      if(p1Hand.isEmpty() || p2Hand.isEmpty())
-      {
-         handShuffle();
-         if(winner() != 0)//if a player is out of cards return to main method
-            return;
-      }
+//       if(p1Hand.isEmpty() || p2Hand.isEmpty())
+//       {
+//          handShuffle();
+//          if(winner() != 0)//if a player is out of cards return to main method
+//             return;
+//       }
          
       //players play one card each
       p1Card = p1Hand.dealCard();
@@ -88,14 +88,14 @@ public class WarGame
    */
    public void war()
    {  
-      //if a player's hand is empty shuffle the winnings pile and 
-      //replace the winnings pile with the players empty hand
-      if(p1Hand.isEmpty() || p2Hand.isEmpty())
-      {
-         handShuffle();
-         if(winner() != 0)//if a player has no cards return to main method
-            return;
-      }
+//       //if a player's hand is empty shuffle the winnings pile and 
+//       //replace the winnings pile with the players empty hand
+//       if(p1Hand.isEmpty() || p2Hand.isEmpty())
+//       {
+//          handShuffle();
+//          if(winner() != 0)//if a player has no cards return to main method
+//             return;
+//       }
       //both players play one card face down
       downCards.addCard(p1Hand.dealCard());
       downCards.addCard(p2Hand.dealCard());
@@ -109,28 +109,20 @@ public class WarGame
    
    public void handShuffle()
    {
-      int cardsLeft; //how many cards are in the winnings pile
-      if(p1Hand.isEmpty())
+      if(p1Hand.isEmpty() && !p1Winnings.isEmpty())
       {
-         if(!p1Winnings.isEmpty()) //if player 1 has no cards left they lose
-         {
-            p1Winnings.shuffle(); //shuffle winnings pile
-            cardsLeft = p1Winnings.cardsRemaining(); //winnings pile size before dealing
-            //deal all cards in winnings pile into the player's hand
-            for(int i = 0; i < cardsLeft; i++) 
-               p1Hand.addCard(p1Winnings.dealCard());
-         }
+         p1Winnings.shuffle(); //shuffle winnings pile
+         //deal all cards in winnings pile into the player's hand
+         while(!p1Winnings.isEmpty()) 
+            p1Hand.addCard(p1Winnings.dealCard());
       }  
-      if(p2Hand.isEmpty())
+      
+      if(p2Hand.isEmpty() && !p2Winnings.isEmpty())
       {
-         if(!p2Winnings.isEmpty()) 
-         {
-            p2Winnings.shuffle(); //shuffle cards in winnings pile
-            cardsLeft = p2Winnings.cardsRemaining();//amount of cards left before dealing
-            //deal all cards in winnings pile into the player's hand
-            for(int i = 0; i < cardsLeft; i++)
-               p2Hand.addCard(p2Winnings.dealCard());
-         }
+         p2Winnings.shuffle(); //shuffle cards in winnings pile
+         //deal all cards in winnings pile into the player's hand
+         while(!p2Winnings.isEmpty())
+            p2Hand.addCard(p2Winnings.dealCard());
       }
    }
    
@@ -143,9 +135,23 @@ public class WarGame
       //if the player has no cards left in their winnings pile or 
       //their hand then they lose
       if(p1Winnings.isEmpty() && p1Hand.isEmpty())
+      {
+         while(!downCards.isEmpty())
+         {
+            p2Winnings.addCard(downCards.dealCard());
+         }
          return 2;
+      }
+            
       else if(p2Winnings.isEmpty() && p2Hand.isEmpty())
+      {
+         while(!downCards.isEmpty())
+         {
+            p1Winnings.addCard(downCards.dealCard());
+         }
          return 1;
+      }
+      
       else //if players have cards left the game continues
          return 0;
    }
@@ -215,13 +221,5 @@ public class WarGame
    public boolean warStatus()
    {
       return inWar;
-   }
-  
-   public static void main(String[] args)
-   {
-      WarGame war = new WarGame();
-      while(war.winner() == 0)
-         war.playRound();
-      System.out.println(war.winner());
    }
 }

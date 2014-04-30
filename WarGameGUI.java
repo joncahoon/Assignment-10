@@ -46,8 +46,8 @@ public class WarGameGUI
       
       //create default game status
       status = new JLabel("Start a new game");
-      status.setForeground(Color.red);
-      status.setFont(new Font("ARIAL", Font.PLAIN, 50));
+      status.setForeground(Color.red); //set color of text
+      status.setFont(new Font("ARIAL", Font.PLAIN, 50)); //set font
       gbc.gridx = 0; //grid row
       gbc.gridy = 0; //grid column
       gbc.gridwidth = 5; //amount of columns the status occupies
@@ -61,8 +61,7 @@ public class WarGameGUI
       gbc.gridx = 0;
       gbc.gridy = 1;
       gbc.gridwidth = 1; //reset width and height to only 1 row and column
-      gbc.gridheight = 1;
-      gbc.weighty = 0;
+      gbc.weighty = 0; //resent extra space between elements in grid
       mainFrame.add(newGame, gbc);
       
       flipCard = new JButton("Play Card");
@@ -83,6 +82,7 @@ public class WarGameGUI
       
       p2WinCount = new JLabel("Cards Won: ");
       p2WinCount.setForeground(Color.red);
+      gbc.fill = GridBagConstraints.CENTER; //place text in center of grid
       gbc.gridx = 1;
       gbc.gridy = 2;
       gbc.weighty = 0;
@@ -94,7 +94,7 @@ public class WarGameGUI
       gbc.gridy = 2;
       mainFrame.add(p2HandCount, gbc);
       
-      p2 = new JLabel("Player 2");
+      p2 = new JLabel("Computer");
       p2.setFont(new Font("ARIAL", Font.PLAIN, 30));
       p2.setForeground(Color.red);
       gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -125,7 +125,7 @@ public class WarGameGUI
       gbc.gridy = 4;
       mainFrame.add(p1Card, gbc);
       
-      p1 = new JLabel("Player 1");
+      p1 = new JLabel("Player");
       p1.setForeground(Color.red);
       p1.setFont(new Font("ARIAL", Font.PLAIN, 30));
       gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -162,7 +162,7 @@ public class WarGameGUI
       mainFrame.setVisible(true);;
    }
    
-   /**showDecks updates the image for the player's hand and winnings pile
+   /**showDecks updates the image for the player's hand
       based on the amount of cards in the pile
    */
    
@@ -189,7 +189,14 @@ public class WarGameGUI
          p2Deck.setIcon(new ImageIcon("cardpics/back.jpg"));
       else
          p2Deck.setIcon(new ImageIcon("cardpics/empty.jpg"));
-                     
+   }  
+   
+   /**showWinnings updates the images for the winnings pile of both
+      players based on how many cards are in the winnings pile
+   */
+   
+   public void showWinnings()
+   {                
       if(game.getP1Winnings() > 15)
          p1Winnings.setIcon(new ImageIcon("cardpics/decklarge.jpg"));
       else if(game.getP1Winnings() > 5)
@@ -212,6 +219,27 @@ public class WarGameGUI
       else
          p2Winnings.setIcon(new ImageIcon("cardpics/empty.jpg"));
    }
+   
+   /**cardsWon updates the text showing how many cards each player
+      has in their winnings pile
+   */
+   
+   public void cardsWon()
+   {
+
+      p1WinCount.setText("Cards Won: " + game.getP1Winnings());
+      p2WinCount.setText("Cards Won: " + game.getP2Winnings());
+   }
+   
+   /**cardsHand updates the text showing how many cards each player
+      has in their hand
+   */
+   
+   public void cardsHand()
+   {
+      p1HandCount.setText("Cards in Hand: " + game.getP1Hand());
+      p2HandCount.setText("Cards in Hand: " + game.getP2Hand());
+   }      
                    
          
    /**ButtonListener class handles button events
@@ -226,6 +254,7 @@ public class WarGameGUI
             game = new WarGame();
             status.setText("New Game");
             status.setIcon(null);
+            flipCard.setEnabled(true);
 
             p1Deck.setIcon(new ImageIcon("cardpics/decklarge.jpg"));
             p2Deck.setIcon(new ImageIcon("cardpics/decklarge.jpg"));
@@ -235,12 +264,11 @@ public class WarGameGUI
             p2Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
             flipCard.setText("Play Card");
             
-            p1HandCount.setText("Cards in Hand: " + game.getP1Hand());
-            p2HandCount.setText("Cards in Hand: " + game.getP2Hand());
-            p1WinCount.setText("Cards Won: " + game.getP1Winnings());
-            p2WinCount.setText("Cards Won: " + game.getP2Winnings());
+            cardsWon();
+            cardsHand();
             
             showDecks();
+            showWinnings();
             
          }
          //flip card for each round
@@ -249,50 +277,79 @@ public class WarGameGUI
             //try catch block to make sure a game has started
             try
             {
+               //update images and text for cards in winnings pile
+               cardsWon();
+               showWinnings();
+               
                //if the game is not in war play a card face up
                if(!game.warStatus())
                {
-                  status.setIcon(null);                    
+                  status.setIcon(null);//reset status icon to null
+                  
+                  //if a player's hand is empty shuffle the cards
+                  //and update the hand and winnings images and text
+                  if(game.getP1Hand() == 0 || game.getP2Hand() == 0)
+                  {
+                     game.handShuffle();
+                     cardsWon();
+                     showWinnings();
+                     showDecks();
+                     cardsHand();
+                  }
+                                      
                   //each player plays a card and update the image for the card
                   game.playRound();
                   p1Card.setIcon(new ImageIcon("cardpics/" + game.getP1Card().shortString() + ".jpg"));
                   p2Card.setIcon(new ImageIcon("cardpics/" + game.getP2Card().shortString() + ".jpg"));
+                  cardsHand();
+                  showDecks();
+                  
                   
                   //display who won the round        
                   if(game.getP1Card().getRank() > game.getP2Card().getRank())
-                     status.setText("Player 1 wins the round");
+                     status.setText("Player wins the round");
                   
                   else if(game.getP1Card().getRank() < game.getP2Card().getRank())
-                     status.setText("Player 2 wins the round");
+                     status.setText("Computer wins the round");
+                     
                   //if cards are equal display the game goes to war
                   else
                   {
-                     status.setText("");
+                     status.setText(null);
                      status.setIcon(new ImageIcon("cardpics/war.jpg"));
+                     //change button to play a card face down
                      flipCard.setText("Play Card Face Down");
                   }
-               }   
+               }
+                  
                //if in war play a card face down
                else
                {
-                  game.war();
-                  flipCard.setText("Play Card");
+                  //if a player's hand is empty shuffle the cards
+                  //and update the hand and winnings images and text
+                  if(game.getP1Hand() == 0 || game.getP2Hand() == 0)
+                  {
+                     game.handShuffle();
+                     cardsWon();
+                     showWinnings();
+                     showDecks();
+                     cardsHand();
+                  }
+                  
+                  game.war();//play card face down
+                  flipCard.setText("Play Card");//reset button to play card
                   p1Card.setIcon(new ImageIcon("cardpics/back.jpg"));
                   p2Card.setIcon(new ImageIcon("cardpics/back.jpg"));
+                  //update cards in hand image and text
+                  cardsHand();
+                  showDecks();
                }
                
-               //update amount of cards in the hand and winnings piles of both players
-               p1HandCount.setText("Cards in Hand: " + game.getP1Hand());
-               p2HandCount.setText("Cards in Hand: " + game.getP2Hand());
-               p1WinCount.setText("Cards Won: " + game.getP1Winnings());
-               p2WinCount.setText("Cards Won: " + game.getP2Winnings());
-               
-               showDecks();
-                  
+               //if a player has won end the game
                if(game.winner() == 1 || game.winner() == 2)
                   gameOver();
             }
-               
+            
             catch(NullPointerException error)
             {
                status.setText("You must start a new game!");
@@ -310,23 +367,30 @@ public class WarGameGUI
       
       public void gameOver()
       {
-         flipCard.setEnabled(false);
+         status.setIcon(null); //remove image in status
+         flipCard.setEnabled(false); //disable flipCard button
+         //remove cards from being in play
          p1Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
          p2Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
+         
+         //upate cards in players hands and winnings images and text
+         cardsWon();
+         cardsHand();      
+         showDecks();
+         showWinnings();
+         
+         //display winner of the game      
          if(game.winner() == 1)
-            status.setText("Player 1 Wins!");
+            status.setText("Player Wins!");
          else
-            status.setText("player 2 Wins1");
+            status.setText("Computer Wins!");
       }
    }
 
-
+   //play the game
    public static void main(String[] args)
    {
       WarGameGUI gui = new WarGameGUI();
    }
 }
-            
-         
-         
-      
+     

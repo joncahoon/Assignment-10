@@ -241,9 +241,4 @@ public class Card
       str = rankName + suitChar;
       return str;
    }
-   public static void main(String[] args)
-   {
-      Card card = new Card(2,11);
-      System.out.println(card.shortString());
-   }
 }

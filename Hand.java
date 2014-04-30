@@ -27,21 +27,4 @@ public class Hand extends Deck
       deck[cardsTotal] = new Card(card);
       cardsTotal++;
    }
-   
-   public static void main(String[] args)
-   {
-      Deck deck = new Deck();
-      Hand hand = new Hand();
-      deck.shuffle();
-      hand.addCard(deck.dealCard());
-      if(deck.isEmpty() || hand.isEmpty())
-         System.out.println("This shouldn't print");
-      System.out.println(hand.dealCard().toString());
-      System.out.println("deck is empty? " + deck.isEmpty());
-      System.out.println("hand is empty? " + hand.isEmpty());
-      if(deck.isEmpty() || hand.isEmpty())
-         System.out.println("This should print");
-      
-      
-   }
 }
