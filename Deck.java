@@ -1,3 +1,6 @@
+/**Deck class simulates a deck of cards
+*/
+
 import java.util.Random;
 public class Deck 
 {
@@ -14,7 +17,7 @@ public class Deck
       freshDeck();
    }
    
-   /**freshDeck method creates a fresh deck of 52 cards
+   /**freshDeck method creates a fresh deck of 52 cards in order
    */
    
    public void freshDeck()

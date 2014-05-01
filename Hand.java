@@ -18,7 +18,7 @@ public class Hand extends Deck
       cardsTotal = 0;
    }
    
-   /**addCard method adds a card to the hand if cards
+   /**addCard method adds a card to the hand
       @param card The Card object to be added to the hand
    */
    

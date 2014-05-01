@@ -43,21 +43,12 @@ public class WarGame
          p2Hand.addCard(deck.dealCard());
       }
    }
-   /**playRound method each player plays on round of cards.  The winner
-      gets all cards currently in play
+   
+   /**playRound method each player plays one round of cards.
    */
    
    public void playRound()
-   {  
-      //if a player's hand is empty shuffle the winnings pile and replace
-      //the winnings pile with the players empty hand
-//       if(p1Hand.isEmpty() || p2Hand.isEmpty())
-//       {
-//          handShuffle();
-//          if(winner() != 0)//if a player is out of cards return to main method
-//             return;
-//       }
-         
+   {           
       //players play one card each
       p1Card = p1Hand.dealCard();
       p2Card = p2Hand.dealCard();
@@ -79,23 +70,17 @@ public class WarGame
 		   while(!downCards.isEmpty())
             p2Winnings.addCard(downCards.dealCard());
       }
-      else
+      else //if cards are equal go to war
          inWar = true;
 
    }
+   
    /**War method plays one card face down from each player and adds them
       to the cards in play
    */
+   
    public void war()
    {  
-//       //if a player's hand is empty shuffle the winnings pile and 
-//       //replace the winnings pile with the players empty hand
-//       if(p1Hand.isEmpty() || p2Hand.isEmpty())
-//       {
-//          handShuffle();
-//          if(winner() != 0)//if a player has no cards return to main method
-//             return;
-//       }
       //both players play one card face down
       downCards.addCard(p1Hand.dealCard());
       downCards.addCard(p2Hand.dealCard());
@@ -136,6 +121,7 @@ public class WarGame
       //their hand then they lose
       if(p1Winnings.isEmpty() && p1Hand.isEmpty())
       {
+         //winning player takes all cards in play
          while(!downCards.isEmpty())
          {
             p2Winnings.addCard(downCards.dealCard());
@@ -145,6 +131,7 @@ public class WarGame
             
       else if(p2Winnings.isEmpty() && p2Hand.isEmpty())
       {
+         //winning player takes all cards in play
          while(!downCards.isEmpty())
          {
             p1Winnings.addCard(downCards.dealCard());

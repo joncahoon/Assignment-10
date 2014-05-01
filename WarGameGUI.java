@@ -15,7 +15,7 @@ public class WarGameGUI
 {
    private WarGame game; //game functionality
    private JFrame mainFrame; //mainframe everything is displayed on
-   //labels to display cards and statuses
+   //labels to display cards and statuses (p2 = computer)
    private JLabel status, p1Card, p2Card, p1Deck, p2Deck;
    private JLabel p1Winnings, p2Winnings, p1War, p2War, p1, p2;
    private JLabel p1WinCount, p2WinCount, p1HandCount, p2HandCount;
@@ -25,6 +25,7 @@ public class WarGameGUI
    
    /**WarGameGUI creates the GUI to play the game of war
    */
+   
    public WarGameGUI()
    {
       mainFrame = new JFrame("Jon's Game of War");//create mainFrame
@@ -34,7 +35,7 @@ public class WarGameGUI
       GridBagLayout  layout = new GridBagLayout();
       GridBagConstraints gbc = new GridBagConstraints();
       mainFrame.setLayout(layout);
-      mainFrame.setBackground(Color.black);
+      mainFrame.setBackground(Color.black);//set background color
       
       //if the window is closed the program terminates
       mainFrame.addWindowListener(new WindowAdapter()
@@ -58,12 +59,12 @@ public class WarGameGUI
       //add buttons
       newGame = new JButton("New Game");
       newGame.addActionListener(new ButtonListener());
-      gbc.fill = GridBagConstraints.HORIZONTAL;
+      gbc.fill = GridBagConstraints.HORIZONTAL;//place text in the cell
       gbc.gridx = 0;
       gbc.gridy = 1;
       gbc.gridwidth = 1; //reset width and height to only 1 row and column
       gbc.weighty = 0; //resent extra space between elements in grid
-      mainFrame.add(newGame, gbc);
+      mainFrame.add(newGame, gbc);//add to mainFrame
       
       flipCard = new JButton("Play Card");
       flipCard.addActionListener(new ButtonListener());
@@ -80,7 +81,6 @@ public class WarGameGUI
       mainFrame.add(quit, gbc);
       
       //add labels for cards and board information
-      
       p2WinCount = new JLabel("Cards Won: ");
       p2WinCount.setForeground(Color.red);
       gbc.fill = GridBagConstraints.CENTER; //place text in center of grid
@@ -240,19 +240,47 @@ public class WarGameGUI
    {
       p1HandCount.setText("Cards in Hand: " + game.getP1Hand());
       p2HandCount.setText("Cards in Hand: " + game.getP2Hand());
-   }      
-                   
+   }  
+   
+   /**gameOver disables the play card button when a player wins and 
+      displays the winner
+   */
+      
+   public void gameOver()
+   {
+      status.setIcon(null); //remove image in status
+      flipCard.setEnabled(false); //disable flipCard button
+      //remove cards from being in play
+      p1Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
+      p2Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
+         
+      //upate cards in players hands and winnings images and text
+      cardsWon();
+      cardsHand();      
+      showDecks();
+      showWinnings();
+         
+      //display winner of the game      
+      if(game.winner() == 1)
+         status.setText("Player Wins!");
+      else
+         status.setText("Computer Wins!");
+   }
+    
          
    /**ButtonListener class handles button events
    */
    
    private class ButtonListener implements ActionListener
    {
+      /**Handles the event of a button being pressed in WarGameGUI
+      */
       public void actionPerformed(ActionEvent e) 
       {
          //start new game
          if(e.getSource() == newGame)
          {
+            //show that it is a new game
             game = new WarGame();
             status.setText("New Game");
             roundEnd = false;
@@ -316,7 +344,7 @@ public class WarGameGUI
                      if(game.getP1Card().getRank() > game.getP2Card().getRank())
                      {
                         status.setText("Player wins the round");
-                        flipCard.setText("Take Cards");
+                        flipCard.setText("Take Cards");//set new instruction on button
                         roundEnd = true;
                      }
                   
@@ -333,7 +361,7 @@ public class WarGameGUI
                         status.setText(null);
                         status.setIcon(new ImageIcon("cardpics/war.jpg"));
                         //change button to play a card face down
-                        flipCard.setText("Play Card Face Down");
+                        flipCard.setText("Play Card Face Down");//set new instructions on button
                         roundEnd = false;
                      }
                   }
@@ -344,7 +372,7 @@ public class WarGameGUI
                      roundEnd = false;
                      p1Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
                      p2Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
-                     flipCard.setText("Play Card");
+                     flipCard.setText("Play Card"); //reset button to play card
                   }
                   
                }
@@ -387,34 +415,12 @@ public class WarGameGUI
          else if(e.getSource() == quit)
             System.exit(0);
       }
-      
-      /**gameOver disables the play card button when a player wins and 
-         displays the winner
-      */
-      
-      public void gameOver()
-      {
-         status.setIcon(null); //remove image in status
-         flipCard.setEnabled(false); //disable flipCard button
-         //remove cards from being in play
-         p1Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
-         p2Card.setIcon(new ImageIcon("cardpics/empty.jpg"));
-         
-         //upate cards in players hands and winnings images and text
-         cardsWon();
-         cardsHand();      
-         showDecks();
-         showWinnings();
-         
-         //display winner of the game      
-         if(game.winner() == 1)
-            status.setText("Player Wins!");
-         else
-            status.setText("Computer Wins!");
-      }
    }
 
-   //play the game
+
+   /**main method calls the GUI and plays the game of war
+   */
+   
    public static void main(String[] args)
    {
       WarGameGUI gui = new WarGameGUI();

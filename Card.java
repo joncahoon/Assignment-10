@@ -238,6 +238,7 @@ public class Card
             suitChar = "Does not exist";
       }
       
+      //return the shortened string representing a card
       str = rankName + suitChar;
       return str;
    }
